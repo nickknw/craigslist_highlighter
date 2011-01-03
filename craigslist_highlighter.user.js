@@ -3,9 +3,15 @@
 // @namespace      nickknw.nearlyfreespeech.net
 // @include        http://victoria.en.craigslist.ca/search/apa*
 // @include        http://victoria.en.craigslist.ca/apa*
-// @require		   http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js
+// @require	   http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js
 // ==/UserScript==
 
+
+/**************************
+* set up user-specific data
+**************************/
+
+var MaxPrice = 875;
 
 var goodLocations = new Array("Oak Bay", "Fairfield", "Gordon\\s\*Head", "Camosun", "Oaklands", "Beacon Hill", "Interurban");
 var badLocations = new Array("Esquimalt", "Langford", "Lake Cowichan", "Sooke", "Brentwood Bay", "\\w\+ Island", "Parksville");
@@ -13,16 +19,16 @@ var badLocations = new Array("Esquimalt", "Langford", "Lake Cowichan", "Sooke", 
 var goodPhrases = new Array("dishwasher", "balcony", "fireplace", "Pets negotiable", "pets considered", "pets permitted", "Hillside Mall", "cats are OK - purrr", "dogs are OK - wooof", "maybe a cat", "cat ok", "pets ok", "pet ok", "cats ok", "2br", "2 bedroom", "two bedroom" );
 var badPhrases = new Array("no balcony", "no dishwasher", "share a kitchen", "no cat", "no pet");
 
-var months = new Array("January", "Jan", "February", "Feb", "March", "Mar", "April", "Apr", "June", "Jun", "July", "Jul", "August", "Aug", "September", "Sept", "October", "Oct", "November", "Nov", "December", "Dec", "immediately");
+var times_available = new Array("January", "Jan", "February", "Feb", "March", "Mar", "April", "Apr", "June", "Jun", "July", "Jul", "August", "Aug", "September", "Sept", "October", "Oct", "November", "Nov", "December", "Dec", "immediately");
 
 //make sure words like 'deck' aren't highlighted
-months = $.map(months, function(monthName) { return (" " + monthName + "[. ]"); });
+times_available = $.map(times_available, function(monthName) { return (" " + monthName + "[. ]"); });
 
-var MaxPrice = 875;
 
-////////////////////////////////////////////
-//main function
-////////////////////////////////////////////
+/****************
+* main function
+****************/
+
 $(document).ready(function()
 {
     // For each listing on the listings page
@@ -33,7 +39,7 @@ $(document).ready(function()
         text.value = listing.html();
 
         //is this listing in our price range?
-		var price = extractPrice(text.value);
+	var price = extractPrice(text.value);
         if (price <= MaxPrice)
         {
             //follows the listing link and retrieves the 'full listing' web page
@@ -52,7 +58,7 @@ $(document).ready(function()
                 termsFound += extractWords(userbody, goodPhrases, "#69EF68");
                 termsFound += extractWords(userbody, badLocations, "#EFB3B3");
                 termsFound += extractWords(userbody, badPhrases, "#EFB3B3");
-                termsFound += extractWords(userbody, months, "#BBBBFF");
+                termsFound += extractWords(userbody, times_available, "#BBBBFF");
                 if(termsFound != "") { termsFound = "Terms Found: " + termsFound; }
 
                 details += termsFound;
@@ -76,20 +82,20 @@ $(document).ready(function()
                     listing.css("background-color", "#FFDDDD");
                 }
 		
-				var price = extractPrice(text.value);
-				
-				color = price - 675;
+		var price = extractPrice(text.value);
+		
+		color = price - 675;
 
-				color = color / 22;
-				color = Math.floor(color);
-				
-				if(color < 0) { color = 0; }
-				if(color > 9) { color = 9; }
+		color = color / 22;
+		color = Math.floor(color);
+		
+		if(color < 0) { color = 0; }
+		if(color > 9) { color = 9; }
 
-				colorInHex = "#" + color + color + color + color + color + color;
+		colorInHex = "#" + color + color + color + color + color + color;
 
-				console.log(colorInHex);
-				highlightDollarAmount(text, price, colorInHex);
+		console.log(colorInHex);
+		highlightDollarAmount(text, price, colorInHex);
 
 
                 listing.html(text.value);    //save the new listing text back into the listing
@@ -109,18 +115,20 @@ $(document).ready(function()
         highlightWords(text, goodLocations, "#AAFFAA");
         highlightWords(text, badPhrases, "#FFAAAA");
         highlightWords(text, badLocations, "#FFAAAA");
-        highlightWords(text, months, "#BBBBFF");
+        highlightWords(text, times_available, "#BBBBFF");
 
         $(this).html(text.value);
     });
 
 });
 
-////////////////////////////////////////////
-//helper functions
-////////////////////////////////////////////
 
-//IN-PLACE highlighting of WORDS in a body of TEXT with the specified COLOR
+/*******************************************
+* helper functions
+*******************************************/
+
+// IN-PLACE highlighting of WORDS in a body of TEXT with the specified COLOR
+// returns true if anything was changed
 function highlightWords(text, words, color)
 {
     changed = false;
@@ -139,20 +147,11 @@ function highlightWords(text, words, color)
 
 function highlightDollarAmount(text, price, color)
 {
-    changed = false;
-
-	var regex = new RegExp("(\\$"+price+")", "gi");
-	text.value = text.value.replace(regex, " <span style='color: " + color + "'>$1</span> ");
-
-	if(!changed && regex.test(text.value))
-	{
-		changed = true;
-	}
-
-    return changed;
+    var regex = new RegExp("(\\$"+price+")", "gi");
+    text.value = text.value.replace(regex, " <span style='color: " + color + "'>$1</span> ");
 }
 
-//extracts the specified WORDS from the body of TEXT, highlights them with the specified COLOR, and wraps them in brackets
+// extracts the specified WORDS from the body of TEXT, highlights them with the specified COLOR, and wraps them in brackets
 function extractWords(text, words, color)
 {
     var listOfWords = "";
@@ -160,7 +159,7 @@ function extractWords(text, words, color)
     for(i in words)
     {
         var regex = new RegExp("("+words[i]+")", "gi");
-//        regex.lastIndex = 0;
+	// regex.lastIndex = 0;
         var regexSuccess = regex.exec(text);
         if(regexSuccess != null)
         {
@@ -176,16 +175,17 @@ function inPriceRange(text)
     return /\$[0-8][0-9][0-9]\s/.test(text);
 }
 
+// only looks for numbers and accounts for a possible $ 
 function extractPrice(text)
 {
-	var price = 0;
-	var regexSuccess = /\$\s?\d+/.exec(text);
+    var price = 0;
+    var regexSuccess = /\$\s?\d+/.exec(text);
 
-	if (regexSuccess != null)
-	{
-		price = parseInt(regexSuccess[0].substring(1));
-	}
+    if (regexSuccess != null)
+    {
+	price = parseInt(regexSuccess[0].substring(1));
+    }
 
-	return price;
+    return price;
 }
 
