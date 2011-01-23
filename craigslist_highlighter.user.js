@@ -31,6 +31,12 @@ times_available = $.map(times_available, function(monthName) { return (" " + mon
 
 $(document).ready(function()
 {
+    // Insert extra controls
+    $("#searchtable > tbody").append(preferredLocationsControl());
+    $("#searchtable > tbody").append(preferredPhrasesControl());
+    $("#searchtable > tbody").append(preferredFeaturesCheckboxes());
+
+
     // For each listing on the listings page
     $("blockquote > p").each(function()
     {
@@ -44,63 +50,65 @@ $(document).ready(function()
         {
             //follows the listing link and retrieves the 'full listing' web page
             var link = listing.children("a").attr("href");  
-            $.get(link, function(data, textStatus)
+            if(link != null)
             {
-                var details = " <font size='-1'> <strong> ";                   //list of words found in the full listing page
-                var regex = /<div id="userbody">([\s\S]*)<.div>/gi;  //regex that will find the userbody tag + contents
-                regex.lastIndex = 0;                                 //without this, the regex will fail every second time it executes because it is saving position
-                var userbody = regex.exec(data)[0];                  //extract the 'userbody' tag + contents
-
-
-                //find and extract desired words from userbody, and wrap them in the appropriate colours
-                var termsFound = "";
-                termsFound += extractWords(userbody, goodLocations, "#69EF68");
-                termsFound += extractWords(userbody, goodPhrases, "#69EF68");
-                termsFound += extractWords(userbody, badLocations, "#EFB3B3");
-                termsFound += extractWords(userbody, badPhrases, "#EFB3B3");
-                termsFound += extractWords(userbody, times_available, "#BBBBFF");
-                if(termsFound != "") { termsFound = "Terms Found: " + termsFound; }
-
-                details += termsFound;
-                details += "</strong></font>";
-
-                listing.append(details);      //add the desired listing details to the listings page
-
-                text.value = listing.html();  //get the updated listing text
-
-
-                //give the listing the correct background colour based on location
-                //listing.css("background-color", "#EEEFA4");
-
-                if(highlightWords(text, goodLocations, "#69EF68"))
+                $.get(link, function(data, textStatus)
                 {
-                    listing.css("background-color", "#AAFFAA");
-                }
+                    var details = " <font size='-1'> <strong> ";                   //list of words found in the full listing page
+                    var regex = /<div id="userbody">([\s\S]*)<.div>/gi;  //regex that will find the userbody tag + contents
+                    regex.lastIndex = 0;                                 //without this, the regex will fail every second time it executes because it is saving position
+                    var userbody = regex.exec(data)[0];                 //extract the 'userbody' tag + contents
 
-                if(highlightWords(text, badLocations, "#EFB3B3"))
-                {
-                    listing.css("background-color", "#FFDDDD");
-                }
-		
-		var price = extractPrice(text.value);
-		
-		color = price - 675;
+                    //find and extract desired words from userbody, and wrap them in the appropriate colours
+                    var termsFound = "";
+                    termsFound += extractWords(userbody, goodLocations, "#69EF68");
+                    termsFound += extractWords(userbody, goodPhrases, "#69EF68");
+                    termsFound += extractWords(userbody, badLocations, "#EFB3B3");
+                    termsFound += extractWords(userbody, badPhrases, "#EFB3B3");
+                    termsFound += extractWords(userbody, times_available, "#BBBBFF");
+                    if(termsFound != "") { termsFound = "Terms Found: " + termsFound; }
 
-		color = color / 22;
-		color = Math.floor(color);
-		
-		if(color < 0) { color = 0; }
-		if(color > 9) { color = 9; }
+                    details += termsFound;
+                    details += "</strong></font>";
 
-		colorInHex = "#" + color + color + color + color + color + color;
+                    listing.append(details);      //add the desired listing details to the listings page
 
-		console.log(colorInHex);
-		highlightDollarAmount(text, price, colorInHex);
+                    text.value = listing.html();  //get the updated listing text
 
 
-                listing.html(text.value);    //save the new listing text back into the listing
+                    //give the listing the correct background colour based on location
+                    //listing.css("background-color", "#EEEFA4");
 
-            }, "html");
+                    if(highlightWords(text, goodLocations, "#69EF68"))
+                    {
+                        listing.css("background-color", "#AAFFAA");
+                    }
+
+                    if(highlightWords(text, badLocations, "#EFB3B3"))
+                    {
+                        listing.css("background-color", "#FFDDDD");
+                    }
+                    
+                    var price = extractPrice(text.value);
+                    
+                    color = price - 675;
+
+                    color = color / 22;
+                    color = Math.floor(color);
+                    
+                    if(color < 0) { color = 0; }
+                    if(color > 9) { color = 9; }
+
+                    colorInHex = "#" + color + color + color + color + color + color;
+
+                    //console.log(colorInHex);
+                    highlightDollarAmount(text, price, colorInHex);
+
+
+                    listing.html(text.value);    //save the new listing text back into the listing
+
+                }, "html");
+            }
         }
     });
 
@@ -119,6 +127,7 @@ $(document).ready(function()
 
         $(this).html(text.value);
     });
+
 
 });
 
@@ -189,3 +198,24 @@ function extractPrice(text)
     return price;
 }
 
+function preferredLocationsControl()
+{
+    return "<tr>" +
+        "<td width='1' align='right'>good locations:</td>" +
+        "<td><input class='goodlocations dv' value='' style='width:100%'></td>" +
+        "<td>bad locations:</td>" +
+        "<td><input class='badlocations dv' value='' style='width:100%'></td>" +
+        "<script type='text/javascript'>$('input.goodlocations').DefaultValue('(comma separated)');</script>" +
+        "<script type='text/javascript'>$('input.badlocations').DefaultValue('(comma separated)');</script>" +
+        "</tr>";
+}
+
+function preferredPhrasesControl()
+{
+
+}
+
+function preferredFeaturesCheckboxes()
+{
+
+}
