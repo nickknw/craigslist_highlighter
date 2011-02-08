@@ -242,7 +242,7 @@ function processListingsPage() {
 
         //is this listing in our price range?
 	var price = extractPrice(text.value);
-        if (user_rentMax != null && price > user_rentMax) {
+        if (user_rentMax != null && user_rentMax != '' && price > user_rentMax) {
             return;
         }
 
@@ -288,8 +288,14 @@ function processListingsPage() {
             
             var price = extractPrice(text.value);
             
-            if(user_rentMin != null) {
-                color = price - user_rentMin;
+            var rentMin = user_rentMin;
+            if (user_rentMax != null && user_rentMax != '') {
+
+                if (rentMin == null || rentMin == '') {
+                    rentMin = user_rentMax * .75;
+                }
+
+                color = price - rentMin;
 
                 color = color / 22;
                 color = Math.floor(color);
