@@ -6,12 +6,18 @@
 // @require	   http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js
 // ==/UserScript==
 
+// just finished using vars for colours
+// have to make the help link do something
+
+var darkerPositiveMatchColour = "#69EF68";
+var darkerNegativeMatchColour = "#EFB3B3";
+
+var positiveMatchColour = "#AAFFAA";
+var negativeMatchColour = "#FFDDDD";
+
+var timeMatchColour = "#BBBBFF";
+
 // Pre-calculated Phrases {{{
-
-var MaxPrice = 875;
-
-var positiveMatchColour = "#69EF68";
-var negativeMatchColour = "#EFB3B3";
 
 var goodPhrases = new Array("% negotiable", "% considered", "% permitted", "% ok", "%s ok", "%s are OK - purrr", "maybe a %", "%s are OK - wooof");
 var badPhrases = new Array("no %\b", "no %s", "%s not permitted", "no %s permitted");
@@ -84,6 +90,7 @@ $(document).ready(function() {
         $("#searchtable > tbody").append(preferredLocationsControl());
         $("#searchtable > tbody").append(preferredPhrasesControl());
         $("#searchtable > tbody").append(preferredFeaturesCheckboxes());
+        $("#searchform").append(aboutBox());
 
         loadUserData();
         insertUserData();
@@ -265,7 +272,11 @@ function processListingsPage() {
             regex.lastIndex = 0;                                 
 
             // extract the 'userbody' tag + contents
-            var userbody = regex.exec(data)[0];                  
+            var userbody = regex.exec(data);
+            if(userbody == null) {
+                return;
+            }
+            userbody = userbody[0];                  
 
             var termsFound = extractAllTermsFromPage(userbody);
             
@@ -279,11 +290,11 @@ function processListingsPage() {
             text.value = listing.html();  
 
             // give the listing the correct background colour based on location
-            if(highlightWords(text, user_goodLocations, positiveMatchColour)) {
-                listing.css("background-color", "#AAFFAA");
+            if(highlightWords(text, user_goodLocations, darkerPositiveMatchColour)) {
+                listing.css("background-color", positiveMatchColour);
             }
-            if(highlightWords(text, user_badLocations, "#EFB3B3")) {
-                listing.css("background-color", "#FFDDDD");
+            if(highlightWords(text, user_badLocations, darkerNegativeMatchColour)) {
+                listing.css("background-color", negativeMatchColour);
             }
             
             var price = extractPrice(text.value);
@@ -319,44 +330,44 @@ function extractAllTermsFromPage(userbody) {
     // **when optimizing, consider conglomerating all good arrays into one and bad arrays into one,
     // then going through the body text less times. Might help?
     var termsFound = "";
-    termsFound += extractWords(userbody, user_goodLocations, positiveMatchColour);
-    termsFound += extractWords(userbody, user_desirablePhrases, positiveMatchColour);
-    termsFound += extractWords(userbody, user_badLocations, negativeMatchColour);
-    termsFound += extractWords(userbody, user_undesirablePhrases, negativeMatchColour);
+    termsFound += extractWords(userbody, user_goodLocations, darkerPositiveMatchColour);
+    termsFound += extractWords(userbody, user_desirablePhrases, darkerPositiveMatchColour);
+    termsFound += extractWords(userbody, user_badLocations, darkerNegativeMatchColour);
+    termsFound += extractWords(userbody, user_undesirablePhrases, darkerNegativeMatchColour);
 
 
     // time to check for all the checkboxes
     if(user_catsOn || user_dogsOn)
     {
-        termsFound += extractWords(userbody, petGoodPhrases, positiveMatchColour);
-        termsFound += extractWords(userbody, petBadPhrases, negativeMatchColour);
+        termsFound += extractWords(userbody, petGoodPhrases, darkerPositiveMatchColour);
+        termsFound += extractWords(userbody, petBadPhrases, darkerNegativeMatchColour);
 
         if(user_catsOn) {
-            termsFound += extractWords(userbody, catGoodPhrases, positiveMatchColour);
-            termsFound += extractWords(userbody, catBadPhrases, negativeMatchColour);
+            termsFound += extractWords(userbody, catGoodPhrases, darkerPositiveMatchColour);
+            termsFound += extractWords(userbody, catBadPhrases, darkerNegativeMatchColour);
         }
         if(user_dogsOn) {
-            termsFound += extractWords(userbody, dogGoodPhrases, positiveMatchColour);
-            termsFound += extractWords(userbody, dogBadPhrases, negativeMatchColour);
+            termsFound += extractWords(userbody, dogGoodPhrases, darkerPositiveMatchColour);
+            termsFound += extractWords(userbody, dogBadPhrases, darkerNegativeMatchColour);
         }
     }
 
     if(user_balconyOn) {
-        termsFound += extractWords(userbody, balconyGoodPhrases, positiveMatchColour);
-        termsFound += extractWords(userbody, balconyBadPhrases, negativeMatchColour);
+        termsFound += extractWords(userbody, balconyGoodPhrases, darkerPositiveMatchColour);
+        termsFound += extractWords(userbody, balconyBadPhrases, darkerNegativeMatchColour);
     }
 
     if(user_fireplaceOn) {
-        termsFound += extractWords(userbody, fireplaceGoodPhrases, positiveMatchColour);
-        termsFound += extractWords(userbody, fireplaceBadPhrases, negativeMatchColour);
+        termsFound += extractWords(userbody, fireplaceGoodPhrases, darkerPositiveMatchColour);
+        termsFound += extractWords(userbody, fireplaceBadPhrases, darkerNegativeMatchColour);
     }
 
     if(user_dishwasherOn) {
-        termsFound += extractWords(userbody, dishwasherGoodPhrases, positiveMatchColour);
-        termsFound += extractWords(userbody, dishwasherBadPhrases, negativeMatchColour);
+        termsFound += extractWords(userbody, dishwasherGoodPhrases, darkerPositiveMatchColour);
+        termsFound += extractWords(userbody, dishwasherBadPhrases, darkerNegativeMatchColour);
     }
 
-    termsFound += extractWords(userbody, timesAvailable, "#BBBBFF");
+    termsFound += extractWords(userbody, timesAvailable, timeMatchColour);
     if(termsFound != "") { termsFound = "Terms Found: " + termsFound; }
 
     return termsFound;
@@ -371,11 +382,11 @@ function processIndividualPage() {
         var text = new Object();
         text.value = $(this).html();
 
-        highlightWords(text, user_goodLocations, "#AAFFAA");
-        highlightWords(text, user_desirablePhrases, "#AAFFAA");
-        highlightWords(text, user_badLocations, "#FFAAAA");
-        highlightWords(text, user_undesirablePhrases, "#FFAAAA");
-        highlightWords(text, timesAvailable, "#BBBBFF");
+        highlightWords(text, user_goodLocations, positiveMatchColour);
+        highlightWords(text, user_desirablePhrases, positiveMatchColour);
+        highlightWords(text, user_badLocations, negativeMatchColour);
+        highlightWords(text, user_undesirablePhrases, negativeMatchColour);
+        highlightWords(text, timesAvailable, timeMatchColour);
 
         if(user_catsOn) {
             highlightWords(text, catGoodPhrases, positiveMatchColour);
@@ -484,6 +495,10 @@ function preferredFeaturesCheckboxes() {
         "<label style='padding-right:3px;'><input type='checkbox' value='cats' id='chkCats'>cats</label>" + 
         "<label style='padding-right:3px;'><input type='checkbox' value='dogs' id='chkDogs'>dogs</label>" + 
         "</td>" +
+        "<td colspan=2 style='text-align:right'>[ <a id='aboutLink' href='javascript:toggleAboutBox()'>about</a> ]</td>" +
+        "<script type='text/javascript'>" + 
+        "function toggleAboutBox() { $('#aboutBox').toggle('fast'); }" +
+        "</script>" +
         "</tr>";
 }
 
@@ -501,6 +516,19 @@ function onOffSwitch(highlighterIsOn) {
     onOffSwitchHtml += " >Off</label></span></td></tr";
 
     return onOffSwitchHtml;
+}
+
+function aboutBox() {
+    return "<fieldset id='aboutBox' style='display:BLOCK; background-color: #FFFFFF; margin-top:20px; border-color: #CCCCCC; border-width:1px;'>" +
+    "<legend>about craigslist highlighter</legend>" +
+    "<div style='background-color:#EEEEEE; border: 1px solid #CCCCCC; padding: 5px; '>" +
+    "<div style='font-weight:bold;'>faq:</div>" +
+    "<div style='font-weight:bold;margin-top:5px;'>it's not working!</div>" +
+    "<div>open an <a href='https://github.com/nickknw/craigslist_highlighter/issues'>issue</a>, and I'll see what I can do! Please include a screenshot and plenty of detail.</div>" +
+    "<div style='font-weight:bold; margin-top:5px;'>why did you include extra checkboxes for cats and dogs?</div><div>I noticed that sometimes people just put 'pets considered' in their listing and don't check off the 'cats are OK' checkbox. I wanted to be able to see these kind of listings more easily.</div>" +
+    "<div style='font-weight:bold; margin-top:5px;'>what browsers does craigslist highlighter support?</div><div>currently just Firefox with Greasemonkey</div>" + 
+    "<div style='text-align:right'>[ <a href='javascript:toggleAboutBox()'>hide</a> ]</div>" +
+    "</div></fieldset>";
 }
 
 function replaceInArray(array, wordToInsert) {
