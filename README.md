@@ -1,7 +1,7 @@
 Craigslist Highlighter
 =======================
 
-[Craigslist Highlighter](http://nickknowlson.com/projects/craigslist-highlighter/) home page. Has screenshots!
+[Craigslist Highlighter](http://nickknowlson.com/projects/craigslist-highlighter/) home page. Contains all of the following information + screenshots!
 
 Details
 ---
