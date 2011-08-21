@@ -1,11 +1,6 @@
 Craigslist Highlighter
 =======================
 
-[Craigslist Highlighter](http://nickknowlson.com/projects/craigslist-highlighter/) home page. Contains all of the following information + screenshots!
-
-Details
----
-
 This script helps highlight things you're looking for when searching for apartments or
 housing on craigslist. 
 
@@ -16,7 +11,7 @@ listing, and highlight them green or red for positive or negative.  You can pick
 the terms you are looking for at the top of the page, the script integrates its
 options panel into the search ui for craigslist.
 
-See the screenshots above for an example of what this looks like. 
+See the screenshots on the [project home page](http://nickknowlson.com/projects/craigslist-highlighter/) for an example of what this looks like. 
 
 Install
 ---
