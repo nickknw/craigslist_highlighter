@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name           Craigslist highlighting
 // @namespace      https://github.com/nickknw
-// @include        http://*.en.craigslist.ca/search/apa*
-// @include        http://*.en.craigslist.ca/apa*
+// @include        http://*.craigslist.ca/search/apa*
+// @include        http://*.craigslist.ca/apa*
 // @require	   http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js
 // ==/UserScript==
 
@@ -503,7 +503,7 @@ function preferredFeaturesCheckboxes() {
 }
 
 function onOffSwitch(highlighterIsOn) {
-    onOffSwitchHtml = "<tr>" +
+    onOffSwitchHtml = "<tr><td colspan=4 style='padding:0'><hr style='height:1px;border:0;background-color:#ccc;'></td></tr><tr>" +
         "<td width='1' align='right'>craigslist highlighter:</td>" +
         "<td><span><label><input type='radio' id='powerOn' name='onoff' value='on' ";
     if(highlighterIsOn) {
@@ -519,14 +519,14 @@ function onOffSwitch(highlighterIsOn) {
 }
 
 function aboutBox() {
-    return "<fieldset id='aboutBox' style='display:BLOCK; background-color: #FFFFFF; margin-top:20px; border-color: #CCCCCC; border-width:1px;'>" +
+    return "<fieldset id='aboutBox' style='display:BLOCK; background-color: #FFFFFF; margin-top:20px; border-color: #CCCCCC; border-width:1px; display: none;'>" +
     "<legend>about craigslist highlighter</legend>" +
     "<div style='background-color:#EEEEEE; border: 1px solid #CCCCCC; padding: 5px; '>" +
     "<div style='font-weight:bold;'>faq:</div>" +
-    "<div style='font-weight:bold;margin-top:5px;'>it's not working!</div>" +
-    "<div>open an <a href='https://github.com/nickknw/craigslist_highlighter/issues'>issue</a>, and I'll see what I can do! Please include a screenshot and plenty of detail.</div>" +
-    "<div style='font-weight:bold; margin-top:5px;'>why did you include extra checkboxes for cats and dogs?</div><div>I noticed that sometimes people just put 'pets considered' in their listing and don't check off the 'cats are OK' checkbox. I wanted to be able to see these kind of listings more easily.</div>" +
-    "<div style='font-weight:bold; margin-top:5px;'>what browsers does craigslist highlighter support?</div><div>currently just Firefox with Greasemonkey</div>" + 
+    "<div style='font-weight:bold;margin-top:5px;'>It's not working!</div>" +
+    "<div>Open an <a href='https://github.com/nickknw/craigslist_highlighter/issues'>issue</a>, and I'll see what I can do! Please include a screenshot and plenty of detail.</div>" +
+    "<div style='font-weight:bold; margin-top:5px;'>Why did you include seperate extra checkboxes for cats and dogs?</div><div>I noticed that sometimes people just put 'pets considered' in their listing and don't check off the 'cats are OK' checkbox. Using the regular cats and dogs checkboxes will filter these out and I wanted to be able to find these kinds of listings more easily.</div>" +
+    "<div style='margin-top:10px;'>For more information, see the <a href='http://nickknowlson.com/projects/craigslist-highlighter/'>Craigslist highlighter home page</a></div>" +
     "<div style='text-align:right'>[ <a href='javascript:toggleAboutBox()'>hide</a> ]</div>" +
     "</div></fieldset>";
 }
