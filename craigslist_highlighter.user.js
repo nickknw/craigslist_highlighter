@@ -247,18 +247,25 @@ function processListingsPage() {
         var text = new Object();
         text.value = listing.html();
 
-        //is this listing in our price range?
+        // is this listing in our price range?
 	var price = extractPrice(text.value);
         if (user_rentMax != null && user_rentMax != '' && price > user_rentMax) {
             return;
         }
 
-        // follows the listing link and retrieves the 'full listing' web page
         var link = listing.children("a").attr("href");  
         if(link == null) {
             return;
         }
 
+        // highlight the matches in the text of the link (because we don't want
+        // to highlight the posting date)
+        var listing_link = listing.find("a");
+        text.value = listing_link.html();
+        highlightLink(text);
+        listing_link.html(text.value);
+
+        // follows the listing link and retrieves the 'full listing' web page
         $.get(link, function(data, textStatus) {
 
             // list of words found in the full listing page
@@ -416,6 +423,43 @@ function highlightWords(text, words, color) {
 function highlightDollarAmount(text, price, color) {
     var regex = new RegExp("(\\$"+price+")", "gi");
     text.value = text.value.replace(regex, " <span style='color: " + color + "'>$1</span> ");
+}
+
+function highlightLink(text) {
+    highlightWords(text, user_desirablePhrases, darkerPositiveMatchColour);
+    highlightWords(text, user_undesirablePhrases, darkerNegativeMatchColour);
+
+    if(user_catsOn || user_dogsOn)
+    {
+        highlightWords(text, petGoodPhrases, darkerPositiveMatchColour);
+        highlightWords(text, petBadPhrases, darkerNegativeMatchColour);
+
+        if(user_catsOn) {
+            highlightWords(text, catGoodPhrases, darkerPositiveMatchColour);
+            highlightWords(text, catBadPhrases, darkerNegativeMatchColour);
+        }
+        if(user_dogsOn) {
+            highlightWords(text, dogGoodPhrases, darkerPositiveMatchColour);
+            highlightWords(text, dogBadPhrases, darkerNegativeMatchColour);
+        }
+    }
+
+    if(user_balconyOn) {
+        highlightWords(text, balconyGoodPhrases, darkerPositiveMatchColour);
+        highlightWords(text, balconyBadPhrases, darkerNegativeMatchColour);
+    }
+
+    if(user_fireplaceOn) {
+        highlightWords(text, fireplaceGoodPhrases, darkerPositiveMatchColour);
+        highlightWords(text, fireplaceBadPhrases, darkerNegativeMatchColour);
+    }
+
+    if(user_dishwasherOn) {
+        highlightWords(text, dishwasherGoodPhrases, darkerPositiveMatchColour);
+        highlightWords(text, dishwasherBadPhrases, darkerNegativeMatchColour);
+    }
+
+    highlightWords(text, timesAvailable, timeMatchColour);
 }
 
 // extracts the specified WORDS from the body of TEXT, highlights them with the specified COLOR, and wraps them in brackets
