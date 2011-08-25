@@ -139,32 +139,34 @@ function loadUserData() {
     user_desirablePhrases = GM_getValue('user_desirablePhrases', null);
     user_undesirablePhrases = GM_getValue('user_undesirablePhrases', null);
 
+    var isNotBlank = function(value) { return value != "" ? true : false };
+
     if(user_goodLocations == null || user_goodLocations == '') {
         user_goodLocations = [];
     }
     else {
-        user_goodLocations = String.split(user_goodLocations, ",");
+        user_goodLocations = String.split(user_goodLocations, ",").filter(isNotBlank);
     }
 
     if(user_badLocations == null || user_badLocations == '') {
         user_badLocations = [];
     }
     else {
-        user_badLocations = String.split(user_badLocations, ",");
+        user_badLocations = String.split(user_badLocations, ",").filter(isNotBlank);
     }
 
     if(user_desirablePhrases == null || user_desirablePhrases == '') {
         user_desirablePhrases = [];
     }
     else {
-        user_desirablePhrases = String.split(user_desirablePhrases, ",");
+        user_desirablePhrases = String.split(user_desirablePhrases, ",").filter(isNotBlank);
     }
 
     if(user_undesirablePhrases == null || user_undesirablePhrases == '') {
         user_undesirablePhrases = [];
     }
     else {
-        user_undesirablePhrases = String.split(user_undesirablePhrases, ",");
+        user_undesirablePhrases = String.split(user_undesirablePhrases, ",").filter(isNotBlank);
     }
 }
 
