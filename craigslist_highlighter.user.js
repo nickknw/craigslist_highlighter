@@ -84,7 +84,7 @@ $(document).ready(function() {
         }
 
         // attach listener that saves data to Search button 
-        document.getElementById("searchform").addEventListener("submit", scrapeAndSaveUserData, false);
+        document.getElementById("searchform").addEventListener("submit", grabAndSaveUserData, false);
 
         // Insert extra controls
         $("#searchtable > tbody").append(preferredLocationsControl());
@@ -188,9 +188,8 @@ function insertUserData() {
 }
 
 // these should always be done as a pair, one after another
-function scrapeAndSaveUserData() {
+function grabAndSaveUserData() {
 
-    // scrape
     user_rentMin = focusAndGetValue(".min");
     user_rentMax = focusAndGetValue(".max");
 
